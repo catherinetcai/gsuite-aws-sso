@@ -6,8 +6,7 @@ import (
 	"net/url"
 
 	"github.com/catherinetcai/gsuite-aws-sso/pkg/config"
-	httphelper "github.com/catherinetcai/gsuite-aws-sso/pkg/http"
-	"github.com/gorilla/mux"
+	"github.com/catherinetcai/gsuite-aws-sso/pkg/oauth"
 	"go.uber.org/zap"
 	oauth2 "golang.org/x/oauth2"
 )
@@ -23,7 +22,7 @@ type Client struct {
 
 // NewClient creates a new OAuth client
 func NewClient(setOpts ...Option) *Client {
-	opts := defaultOptions()
+	opts := DefaultOptions()
 
 	for _, setOpt := range setOpts {
 		setOpt(opts)
@@ -37,35 +36,30 @@ func NewClient(setOpts ...Option) *Client {
 	}
 }
 
-// LoginHandler redirects a client to the Google OAuth login page
-func (c *Client) LoginHandler(w http.ResponseWriter, req *http.Request) {
-	http.Redirect(w, req, c.loginURL, http.StatusFound)
+// GetOAuthLoginURL returns the OAuth login URL
+func (c *Client) GetOAuthLoginURL() string {
+	return c.loginURL
 }
 
-// CallbackHandler handles the OAuth callback
-// https://developers.google.com/identity/protocols/OAuth2WebServer
-func (c *Client) CallbackHandler(w http.ResponseWriter, req *http.Request) {
-	vars := mux.Vars(req)
-
-	tok, err := c.cfg.Exchange(context.Background(), vars["code"])
+// Exchange exchanges a code for a wrapped ID token
+func (c *Client) Exchange(ctx context.Context, code string) (*oauth.IDToken, error) {
+	tok, err := c.cfg.Exchange(context.Background(), code)
 	if err != nil {
 		c.logger.Error("error exchanging OAuth code", zap.Error(err))
-		httphelper.JSONResponse(w, struct{}{}, http.StatusBadRequest)
-		return
+		return nil, err
 	}
 
 	// Get the ID token from the token, which when the 2nd portion is base64 decoded
 	// gives us back something resembling:
 	idTokenStr := tok.Extra("id_token").(string)
 
-	idToken, err := ParseIDToken(idTokenStr)
+	idToken, err := oauth.ParseIDToken(idTokenStr)
 	if err != nil {
 		c.logger.Error("error parsing id token", zap.Error(err))
-		httphelper.JSONResponse(w, struct{}{}, http.StatusBadRequest)
-		return
+		return nil, err
 	}
 
-	// httphelper.JSONResponse(w, tok, http.StatusOK)
+	return idToken, nil
 }
 
 func oauthConf(cfg config.OAuth) *oauth2.Config {

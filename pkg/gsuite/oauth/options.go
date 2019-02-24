@@ -39,7 +39,8 @@ func WithClient(c *http.Client) Option {
 	}
 }
 
-func defaultOptions() *Options {
+// DefaultOptions set defaults
+func DefaultOptions() *Options {
 	return &Options{
 		Client: &http.Client{},
 		Logger: logging.Logger(),

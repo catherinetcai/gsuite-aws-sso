@@ -1,16 +1,20 @@
 package server
 
 import (
+	"github.com/catherinetcai/gsuite-aws-sso/pkg/directory"
 	"github.com/catherinetcai/gsuite-aws-sso/pkg/logging"
+	"github.com/catherinetcai/gsuite-aws-sso/pkg/oauth"
 	"github.com/gorilla/mux"
 	"go.uber.org/zap"
 )
 
 // Options contain all server options
 type Options struct {
-	Router *mux.Router
-	Logger *zap.Logger
-	Port   int
+	Router    *mux.Router
+	Logger    *zap.Logger
+	Port      int
+	OAuth     oauth.Service
+	Directory directory.Service
 }
 
 // Option is a functional way of setting options for the server
@@ -34,6 +38,20 @@ func WithLogger(l *zap.Logger) Option {
 func WithPort(p int) Option {
 	return func(o *Options) {
 		o.Port = p
+	}
+}
+
+// WithOAuth sets the OAuth service
+func WithOAuth(oAuth oauth.Service) Option {
+	return func(o *Options) {
+		o.OAuth = oAuth
+	}
+}
+
+// WithDirectory sets the Directory Service
+func WithDirectory(dir directory.Service) Option {
+	return func(o *Options) {
+		o.Directory = dir
 	}
 }
 

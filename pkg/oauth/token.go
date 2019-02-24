@@ -7,7 +7,7 @@ import (
 	"time"
 )
 
-// IDToken matches the fields from the ID token of the OAuth
+// IDToken matches the fields from the ID token of the OAuth response
 type IDToken struct {
 	Iss      string    `json:"iss"`
 	Aud      string    `json:"aud"`
