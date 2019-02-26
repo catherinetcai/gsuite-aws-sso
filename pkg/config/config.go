@@ -42,6 +42,7 @@ type GSuite struct {
 	ServiceAccountPath  string `json:"service_account_path"`
 	ClientID            string `json:"client_id"`
 	ServiceAccountEmail string `json:"service_account_email"`
+	ImpersonationEmail  string `json:"impersonation_email"`
 }
 
 // OAuth encapsulates all OAuth configs
@@ -78,6 +79,7 @@ func Get() *Config {
 				ServiceAccountBase64EncodedFile: gocfg.Get("gsuite", "service", "account", "base64", "file").String(""),
 				ServiceAccountPath:              gocfg.Get("gsuite", "service", "account", "path").String(""),
 				ServiceAccountEmail:             gocfg.Get("gsuite", "service", "account", "email").String(""),
+				ImpersonationEmail:              gocfg.Get("gsuite", "impersonation", "email").String(""),
 			},
 			OAuth: OAuth{
 				ClientID:     gocfg.Get("oauth", "client", "id").String(""),

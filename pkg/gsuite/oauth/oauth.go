@@ -2,6 +2,7 @@ package oauth
 
 import (
 	"context"
+	"fmt"
 	"net/http"
 	"net/url"
 
@@ -9,6 +10,7 @@ import (
 	"github.com/catherinetcai/gsuite-aws-sso/pkg/oauth"
 	"go.uber.org/zap"
 	oauth2 "golang.org/x/oauth2"
+	"golang.org/x/oauth2/google"
 )
 
 // TODO: Need a way to exchange the refresh token for another access token
@@ -60,6 +62,52 @@ func (c *Client) Exchange(ctx context.Context, code string) (*oauth.IDToken, err
 	}
 
 	return idToken, nil
+}
+
+// TokenSourceFromCredentials takes in a credentials file and returns a token source
+func (c *Client) TokenSourceFromCredentials(ctx context.Context, credentials []byte) (oauth2.TokenSource, error) {
+	creds, err := google.CredentialsFromJSON(ctx, credentials, "email")
+	if err != nil {
+		c.logger.Error("error getting credentials from JSON", zap.Error(err))
+		return nil, err
+	}
+
+	return creds.TokenSource, nil
+}
+
+// IDToken takes in a token source, validates it, and returns an ID token
+// TODO: For now, we're not using the production version - we're just hitting an endpoint to
+// validate that the token is valid. To productionize this we should be hitting the JWKS URI
+func (c *Client) IDToken(tokenSource oauth2.TokenSource) (*oauth.IDToken, error) {
+	v := url.Values{}
+	token, err := tokenSource.Token()
+	if err != nil {
+		c.logger.Error("error getting token from source", zap.Error(err))
+		return nil, err
+	}
+
+	idToken := token.Extra("id_token").(string)
+
+	v.Set("id_token", idToken)
+
+	url := url.URL{
+		Scheme:   "https",
+		Host:     "www.googleapis.com",
+		Path:     "oauth2/v3/tokeninfo",
+		RawQuery: v.Encode(),
+	}
+
+	resp, err := http.Get(url.String())
+	if err != nil {
+		c.logger.Error("error validating token", zap.Error(err))
+		return nil, err
+	}
+
+	if resp.StatusCode >= 400 {
+		return nil, fmt.Errorf("invalid request validating token")
+	}
+
+	return oauth.ParseIDToken(idToken)
 }
 
 func oauthConf(cfg config.OAuth) *oauth2.Config {

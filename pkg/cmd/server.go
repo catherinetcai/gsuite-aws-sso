@@ -1,6 +1,8 @@
 package cmd
 
 import (
+	"github.com/aws/aws-sdk-go/aws/session"
+	"github.com/catherinetcai/gsuite-aws-sso/pkg/aws"
 	"github.com/catherinetcai/gsuite-aws-sso/pkg/config"
 	gdirectory "github.com/catherinetcai/gsuite-aws-sso/pkg/gsuite/directory"
 	goauth "github.com/catherinetcai/gsuite-aws-sso/pkg/gsuite/oauth"
@@ -32,12 +34,18 @@ func runServer(cmd *cobra.Command, args []string) {
 
 	directoryClient, err := gdirectory.NewClient(
 		gdirectory.WithLogger(logger),
+		gdirectory.WithImpersonationEmail(config.Get().GSuite.ImpersonationEmail),
 		gdirectory.WithServiceAccountEmail(config.Get().GSuite.ServiceAccountEmail),
 		// TODO: Make this flexible with both the base64 or a file path
 		gdirectory.WithServiceAccountBase64EncodedFile(config.Get().GSuite.ServiceAccountBase64EncodedFile),
 	)
 	if err != nil {
 		logging.Logger().Fatal("failed to initialize directory", zap.Error(err))
+	}
+
+	awsClient := aws.New(session.Must(session.NewSession()))
+	if err != nil {
+		logging.Logger().Fatal("failed to initialize aws", zap.Error(err))
 	}
 
 	// TODO: Need to handle any unmatched routes
@@ -50,6 +58,7 @@ func runServer(cmd *cobra.Command, args []string) {
 		server.WithRouter(router),
 		server.WithOAuth(oauthClient),
 		server.WithDirectory(directoryClient),
+		server.WithRole(awsClient),
 	)
 	if err != nil {
 		logging.Logger().Fatal("failed to start server", zap.Error(err))

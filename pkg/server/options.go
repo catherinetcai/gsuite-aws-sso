@@ -4,6 +4,7 @@ import (
 	"github.com/catherinetcai/gsuite-aws-sso/pkg/directory"
 	"github.com/catherinetcai/gsuite-aws-sso/pkg/logging"
 	"github.com/catherinetcai/gsuite-aws-sso/pkg/oauth"
+	"github.com/catherinetcai/gsuite-aws-sso/pkg/role"
 	"github.com/gorilla/mux"
 	"go.uber.org/zap"
 )
@@ -15,6 +16,7 @@ type Options struct {
 	Port      int
 	OAuth     oauth.Service
 	Directory directory.Service
+	Role      role.Service
 }
 
 // Option is a functional way of setting options for the server
@@ -52,6 +54,13 @@ func WithOAuth(oAuth oauth.Service) Option {
 func WithDirectory(dir directory.Service) Option {
 	return func(o *Options) {
 		o.Directory = dir
+	}
+}
+
+// WithRole sets the Role Service
+func WithRole(r role.Service) Option {
+	return func(o *Options) {
+		o.Role = r
 	}
 }
 

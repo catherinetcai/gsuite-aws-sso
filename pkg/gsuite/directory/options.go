@@ -1,4 +1,4 @@
-package discovery
+package directory
 
 import (
 	"encoding/base64"
@@ -11,8 +11,10 @@ import (
 type Options struct {
 	ClientID            string
 	Logger              *zap.Logger
+	ImpersonationEmail  string
 	ServiceAccountEmail string
 	ServiceAccountPEM   []byte
+	Scopes              []string
 }
 
 // Option ...
@@ -38,6 +40,13 @@ func WithServiceAccountBase64EncodedFile(file string) Option {
 func WithServiceAccountFile(f []byte) Option {
 	return func(o *Options) {
 		o.ServiceAccountPEM = f
+	}
+}
+
+// WithImpersonationEmail sets the impersonation email on the Option
+func WithImpersonationEmail(email string) Option {
+	return func(o *Options) {
+		o.ImpersonationEmail = email
 	}
 }
 

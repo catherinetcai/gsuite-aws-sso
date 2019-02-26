@@ -7,6 +7,7 @@ import (
 
 	"github.com/catherinetcai/gsuite-aws-sso/pkg/directory"
 	"github.com/catherinetcai/gsuite-aws-sso/pkg/oauth"
+	"github.com/catherinetcai/gsuite-aws-sso/pkg/role"
 	"github.com/gorilla/handlers"
 	"github.com/gorilla/mux"
 	"go.uber.org/zap"
@@ -19,6 +20,7 @@ type Server struct {
 	port         int
 	oAuthSvc     oauth.Service
 	directorySvc directory.Service
+	roleSvc      role.Service
 }
 
 // New returns a new instance of the server
@@ -38,6 +40,7 @@ func New(setOpts ...Option) (*Server, error) {
 		port:         opts.Port,
 		oAuthSvc:     opts.OAuth,
 		directorySvc: opts.Directory,
+		roleSvc:      opts.Role,
 	}, nil
 }
 
@@ -64,7 +67,7 @@ func (s *Server) Run() error {
 	s.logger.Info("starting server", zap.Int("port", s.port))
 	srv := &http.Server{
 		Addr:         fmt.Sprintf(":%d", s.port),
-		Handler:      handlers.RecoveryHandler(handlers.RecoveryLogger(&wrappedLogger{s.logger}))(s.router),
+		Handler:      handlers.RecoveryHandler(handlers.RecoveryLogger(&wrappedLogger{Logger: s.logger}))(s.router),
 		ReadTimeout:  15 * time.Second,
 		WriteTimeout: 15 * time.Second,
 	}
@@ -86,12 +89,17 @@ func (s *Server) defaultRoutes() []*Route {
 			Method:      GET,
 			Queries:     []string{"code", "{code}"},
 		},
+		&Route{
+			Path:        "/credentials",
+			HandlerFunc: s.CredentialHandler,
+			Method:      POST,
+		},
 	}
 }
 
 // HACK: Our ghetto fabulous wrapper for being able to have the zap logger work with the RecoveryLogger
 type wrappedLogger struct {
-	*zap.Logger
+	Logger *zap.Logger
 }
 
 func (w *wrappedLogger) Println(args ...interface{}) {

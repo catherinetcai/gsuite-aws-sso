@@ -18,3 +18,28 @@ The problem with Google App is that there is no programmable API to enable loggi
 Essentially, the way to solve this problem would be an AuthN/AuthZ coordinator service that is able to 1) use Google's Auth 2.0 to validate a user owns their email 2) look up the user and the user's attributes within a GSuite organization's directory (enabled via the [Admin SDK](https://developers.google.com/admin-sdk/) 3) map a user to the appropriate AWS role via their custom attributes 4) get STS credentials for that AWS role.
 
 This service will end up being two components. One side is the service component performing all the coordination. The other side is a CLI tool that will take the response from the server (the STS credentials) and then seed them appropriately into `~/.aws/credentials`.
+
+## Flow
+### Client
+The client relies on default GCloud Auth credentials in order to work.
+
+```bash
+# Must point CLOUDSDK_PYTHON to valid Python 3
+export CLOUDSDK_PYTHON=$HOME/.pyenv/shims/python3
+
+# Get Google Cloud login credentials
+gcloud auth application-default login
+```
+
+Then, log into the Google account with the Wurl account.
+
+GCloud credentials will get seeded to `/Users/<user>/.config/gcloud/application_default_credentials.json`.
+
+### Server
+#### GSuite
+The server must be provisioned with Client ID, service account (with domain-wide delegation) credentials, scopes, and a GSuite Admin user to impersonate.
+
+The server will use the credential file in order to log into a service account. The Directory API requires an Admin user, so it will impersonate the Admin user in order to do work (in this case, be able to get user directory info).
+
+#### AWS
+The server must also be provisioned with AWS credentials that are able to assume the roles that are available via GSuite.
