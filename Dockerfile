@@ -1,6 +1,7 @@
-FROM golang:1.10.8-stretch
+FROM golang:1.10.8-stretch as builder
 
 WORKDIR /go/src/github.com/catherinetcai/gsuite-aws-sso
+RUN curl https://raw.githubusercontent.com/golang/dep/v0.5.0/install.sh | sh
 RUN mkdir /release
 COPY . .
 RUN dep ensure -v
