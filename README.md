@@ -1,4 +1,6 @@
 # GSuite AWS SSO
+[![CircleCI](https://circleci.com/gh/catherinetcai/gsuite-aws-sso.svg?style=svg)](https://circleci.com/gh/catherinetcai/gsuite-aws-sso)
+
 ## Introduction
 Setting up SSO for Google Apps via the AWS console is pretty straightforward. Google has a very [helpful guide](https://support.google.com/a/answer/6194963) for getting set up.
 
