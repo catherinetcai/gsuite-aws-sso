@@ -1,10 +1,38 @@
 # GSuite AWS SSO
+[![CircleCI](https://circleci.com/gh/catherinetcai/gsuite-aws-sso.svg?style=svg)](https://circleci.com/gh/catherinetcai/gsuite-aws-sso)
+
 ## Introduction
 Setting up SSO for Google Apps via the AWS console is pretty straightforward. Google has a very [helpful guide](https://support.google.com/a/answer/6194963) for getting set up.
 
 Unfortunately, getting SSO for the AWS CLI isn't quite as easy. There are quite a few solutions that already exist out there, such as [aws-google-auth](https://github.com/cevoaustralia/aws-google-auth) and [saml2aws](https://github.com/Versent/saml2aws). Though they get the job done, their underlying implementation is quite brittle as they use page scraping.
 
 This tool is a less brittle way to achieve this effect, though this method is still a bit of a hack.
+
+## Building
+The [Makefile](Makefile) has invocations for building the client and server binaries.
+
+```bash
+make # Will build client and server binaries and place them in release/ folder
+```
+
+## Running
+### Client
+The client can be run via the following:
+
+```bash
+make client-login
+# OR
+./client login
+```
+
+### Server
+The server can be run via the following:
+
+```bash
+make run
+# OR
+./server run
+```
 
 ## Design
 There are a couple of core requirements to make the AWS SSO CLI work:
