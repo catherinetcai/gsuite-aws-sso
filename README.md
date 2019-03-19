@@ -6,6 +6,32 @@ Unfortunately, getting SSO for the AWS CLI isn't quite as easy. There are quite 
 
 This tool is a less brittle way to achieve this effect, though this method is still a bit of a hack.
 
+## Building
+The [Makefile](Makefile) has invocations for building the client and server binaries.
+
+```bash
+make # Will build client and server binaries and place them in release/ folder
+```
+
+## Running
+### Client
+The client can be run via the following:
+
+```bash
+make client-login
+# OR
+./client login
+```
+
+### Server
+The server can be run via the following:
+
+```bash
+make run
+# OR
+./server run
+```
+
 ## Design
 There are a couple of core requirements to make the AWS SSO CLI work:
 * User must login successfully into Google and prove ownership of their account within the GSuite organization

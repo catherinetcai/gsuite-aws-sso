@@ -3,3 +3,6 @@ vendor/
 
 # Ignore .env files
 .env
+
+# Ignore release targets
+release/**
