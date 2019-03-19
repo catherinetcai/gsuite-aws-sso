@@ -2,7 +2,6 @@ package aws
 
 import (
 	"bytes"
-	"path/filepath"
 
 	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/aws/session"
@@ -10,9 +9,9 @@ import (
 	"github.com/aws/aws-sdk-go/service/iam/iamiface"
 	"github.com/aws/aws-sdk-go/service/sts"
 	"github.com/aws/aws-sdk-go/service/sts/stsiface"
+	"github.com/catherinetcai/gsuite-aws-sso/pkg/file"
 	"github.com/catherinetcai/gsuite-aws-sso/pkg/logging"
 	"github.com/catherinetcai/gsuite-aws-sso/pkg/role"
-	homedir "github.com/mitchellh/go-homedir"
 	"go.uber.org/zap"
 	ini "gopkg.in/ini.v1"
 )
@@ -43,12 +42,12 @@ func New(sess *session.Session) *AWS {
 // CredentialLocation returns the location the AWS credentials will be stored in.
 // Defaults to ~/.aws/credentials
 func (a *AWS) CredentialLocation() (string, error) {
-	userHome, err := homedir.Dir()
+	userHome, err := file.WithUserHomeDir(".aws", "credentials")
 	if err != nil {
 		return "", err
 	}
 
-	return filepath.Join(userHome, ".aws", "credentials"), nil
+	return userHome, nil
 }
 
 // GetRegion gets the region associated with the calling credentials

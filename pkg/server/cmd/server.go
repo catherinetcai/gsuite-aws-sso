@@ -1,4 +1,4 @@
-package cmd
+package servercmd
 
 import (
 	"github.com/aws/aws-sdk-go/aws/session"

@@ -31,9 +31,11 @@ func NewClient(setOpts ...Option) *Client {
 	}
 
 	return &Client{
-		client:   opts.Client,
-		logger:   opts.Logger,
-		cfg:      oauthConf(opts.Config),
+		client: opts.Client,
+		logger: opts.Logger,
+		cfg:    oauthConf(opts.Config),
+		// TODO: I don't love the reference the global config object, this breaks
+		// the flow of data
 		loginURL: generateOAuthLoginURL(opts.Config),
 	}
 }

@@ -7,26 +7,16 @@ import (
 	"net/http"
 
 	httphelper "github.com/catherinetcai/gsuite-aws-sso/pkg/http"
+	"github.com/catherinetcai/gsuite-aws-sso/pkg/shared/handlers"
 	"go.uber.org/zap"
 )
-
-// CredentialHandlerRequest wraps in a credential
-type CredentialHandlerRequest struct {
-	CredentialFile []byte `json:"credential_file"`
-}
-
-// CredentialHandlerResponse returns a credential request
-type CredentialHandlerResponse struct {
-	CredentialFilePath string `json:"credential_file_path"`
-	CredentialFile     []byte `json:"credential_file"`
-}
 
 // https://stackoverflow.com/questions/13317987/authorizing-command-line-tool-to-consume-google-apis-through-oauth2-0-or-anythi
 
 // CredentialHandler takes in a client access token, validates it, and then returns a set of credentials
 func (s *Server) CredentialHandler(w http.ResponseWriter, req *http.Request) {
-	request := &CredentialHandlerRequest{}
-	response := &CredentialHandlerResponse{}
+	request := &handlers.CredentialHandlerRequest{}
+	response := &handlers.CredentialHandlerResponse{}
 
 	body, err := ioutil.ReadAll(req.Body)
 	defer req.Body.Close()
