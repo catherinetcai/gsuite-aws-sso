@@ -94,6 +94,11 @@ func (s *Server) defaultRoutes() []*Route {
 			HandlerFunc: s.CredentialHandler,
 			Method:      POST,
 		},
+		&Route{
+			Path:        "/health",
+			HandlerFunc: s.HealthHandler,
+			Method:      GET,
+		},
 	}
 }
 
