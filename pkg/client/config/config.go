@@ -121,6 +121,12 @@ func SetConfigs(cfg *Config) error {
 		return err
 	}
 
+	// Ensure file is empty
+	if err := cfgFile.Truncate(0); err != nil {
+		return err
+	}
+	cfgFile.Seek(0, 0)
+
 	_, err = cfgFile.Write(cfgRaw)
 	return err
 }
