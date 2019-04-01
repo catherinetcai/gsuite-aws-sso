@@ -22,33 +22,33 @@ func (s *Server) CredentialHandler(w http.ResponseWriter, req *http.Request) {
 	defer req.Body.Close()
 	if err != nil {
 		s.logger.Error("error reading credential request", zap.Error(err))
-		httphelper.JSONResponse(w, response, http.StatusBadRequest)
+		httphelper.JSONResponse(w, struct{}{}, http.StatusBadRequest)
 		return
 	}
 
 	if err := json.Unmarshal(body, request); err != nil {
 		s.logger.Error("error unmarshalling response", zap.Error(err))
-		httphelper.JSONResponse(w, response, http.StatusInternalServerError)
+		httphelper.JSONResponse(w, struct{}{}, http.StatusInternalServerError)
 		return
 	}
 
 	tokenSource, err := s.oAuthSvc.TokenSourceFromCredentials(context.Background(), request.CredentialFile)
 	if err != nil {
 		s.logger.Error("error getting token source from credentials", zap.Error(err))
-		httphelper.JSONResponse(w, response, http.StatusUnauthorized)
+		httphelper.JSONResponse(w, struct{}{}, http.StatusUnauthorized)
 		return
 	}
 
 	idToken, err := s.oAuthSvc.IDToken(tokenSource)
 	if err != nil {
 		s.logger.Error("error getting id token", zap.Error(err))
-		httphelper.JSONResponse(w, response, http.StatusUnauthorized)
+		httphelper.JSONResponse(w, struct{}{}, http.StatusUnauthorized)
 		return
 	}
 
 	user, err := s.directorySvc.GetUser(idToken.Email)
 	if err != nil {
-		httphelper.JSONResponse(w, response, http.StatusBadRequest)
+		httphelper.JSONResponse(w, struct{}{}, http.StatusBadRequest)
 		return
 	}
 
@@ -61,7 +61,7 @@ func (s *Server) CredentialHandler(w http.ResponseWriter, req *http.Request) {
 		s.logger.Error("error getting credential for email",
 			zap.String("email", idToken.Email),
 			zap.Error(err))
-		httphelper.JSONResponse(w, response, http.StatusBadRequest)
+		httphelper.JSONResponse(w, struct{}{}, http.StatusBadRequest)
 		return
 	}
 

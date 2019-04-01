@@ -104,6 +104,10 @@ func login(cmd *cobra.Command, args []string) {
 		logging.Logger().Fatal("error reading credential response", zap.Error(err))
 	}
 
+	if resp.StatusCode >= 400 {
+		logging.Logger().Fatal("error trying to log in", zap.Int("status", resp.StatusCode), zap.ByteString("error", respBody))
+	}
+
 	credentialResp := &handlers.CredentialHandlerResponse{}
 
 	// Unmarshalling only to make sure that the response body is correct
