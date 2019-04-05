@@ -9,6 +9,8 @@ import (
 	"go.uber.org/zap"
 )
 
+// TODO: These are routes great for debugging, not for logging in
+
 // LoginHandler redirects a client to the Google OAuth login page
 func (s *Server) LoginHandler(w http.ResponseWriter, req *http.Request) {
 	http.Redirect(w, req, s.oAuthSvc.GetOAuthLoginURL(), http.StatusFound)

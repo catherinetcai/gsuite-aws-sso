@@ -13,7 +13,7 @@ type IDToken struct {
 	Sub      string `json:"sub"`
 	Hd       string `json:"hd"`
 	Email    string `json:"email"`
-	Verified bool   `json:"verified"`
+	Verified bool   `json:"email_verified"`
 	Iat      int    `json:"iat"`
 	Exp      int    `json:"exp"`
 }

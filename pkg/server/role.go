@@ -68,16 +68,5 @@ func (s *Server) CredentialHandler(w http.ResponseWriter, req *http.Request) {
 	response.CredentialFile = cred.Raw
 	response.CredentialFilePath = cred.Location
 
-	// https://stackoverflow.com/questions/24442668/google-oauth-api-to-get-users-email-address
-	// TODO: Move this into the OAuth client
-	// https://developers.google.com/identity/protocols/OpenIDConnect#discovery
-	// oauthClient := oauth2.NewClient(context.Background(), tokenSource)
-	// resp, err := oauthClient.Get("https://www.googleapis.com/oauth2/v3/userinfo")
-	// if err != nil {
-	// 	s.logger.Error("error getting user info", zap.Error(err))
-	// 	httphelper.JSONResponse(w, response, http.StatusUnauthorized)
-	// 	return
-	// }
-
 	httphelper.JSONResponse(w, response, http.StatusOK)
 }

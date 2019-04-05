@@ -59,7 +59,8 @@ type OAuth struct {
 
 // Server encapsulates all server configs
 type Server struct {
-	Port int `json:"port"`
+	Port        int    `json:"port"`
+	Environment string `json:"environment"`
 }
 
 // Initialize configs
@@ -90,7 +91,8 @@ func Get() *Config {
 				RedirectURL:  gocfg.Get("oauth", "redirect", "url").String(""),
 			},
 			Server: Server{
-				Port: gocfg.Get("server", "port").Int(3030),
+				Port:        gocfg.Get("server", "port").Int(3030),
+				Environment: gocfg.Get("server", "environment").String("development"),
 			},
 		}
 	})

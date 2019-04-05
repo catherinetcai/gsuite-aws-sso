@@ -5,6 +5,7 @@ import (
 	"os"
 
 	"github.com/catherinetcai/gsuite-aws-sso/pkg/config"
+	"github.com/catherinetcai/gsuite-aws-sso/version"
 	"github.com/spf13/cobra"
 )
 
@@ -26,4 +27,5 @@ func Execute() {
 func init() {
 	// Surprise! We're not using Viper (as is the Cobra default)
 	cobra.OnInitialize(config.Initialize)
+	rootCmd.AddCommand(version.VersionCmd)
 }

@@ -42,7 +42,6 @@ func defaultGCloudCredentialPath() string {
 	return path
 }
 
-// TODO: Centralize these requests somewhere since they are shared between the server and client
 func login(cmd *cobra.Command, args []string) {
 	cfg, err := config.Get()
 	if err != nil {
